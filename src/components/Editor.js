@@ -14,7 +14,7 @@ export default function Editor({ currentNote, updateNote }) {
 
     return (
         <section className="pane editor">
-            <ReactMde
+            <ReactMde 
                 value={currentNote.body}
                 onChange={updateNote}
                 selectedTab={selectedTab}
@@ -22,7 +22,10 @@ export default function Editor({ currentNote, updateNote }) {
                 generateMarkdownPreview={(markdown) =>
                     Promise.resolve(converter.makeHtml(markdown))
                 }
-                minEditorHeight={80}
+                
+                minEditorHeight={900}
+                
+
                 heightUnits="vh"
             />
         </section>
