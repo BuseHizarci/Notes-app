@@ -4,12 +4,11 @@ import Editor from "./components/Editor"
 import { data } from "./data"
 import Split from "react-split"
 import {nanoid} from "nanoid"
-import "../src/style.css"
+import "./style.css"
 
 export default function App() {
-    
     const [notes, setNotes] = React.useState(
-        JSON.parse(localStorage.getItem("notes")) || []
+        () => JSON.parse(localStorage.getItem("notes")) || []
     )
     const [currentNoteId, setCurrentNoteId] = React.useState(
         (notes[0] && notes[0].id) || ""
@@ -29,11 +28,25 @@ export default function App() {
     }
     
     function updateNote(text) {
-        setNotes(oldNotes => oldNotes.map(oldNote => {
-            return oldNote.id === currentNoteId
-                ? { ...oldNote, body: text }
-                : oldNote
-        }))
+        // Put the most recently-modified note at the top
+        setNotes(oldNotes => {
+            const newArray = []
+            for(let i = 0; i < oldNotes.length; i++) {
+                const oldNote = oldNotes[i]
+                if(oldNote.id === currentNoteId) {
+                    newArray.unshift({ ...oldNote, body: text })
+                } else {
+                    newArray.push(oldNote)
+                }
+            }
+            return newArray
+        })
+    }
+   
+    
+    function deleteNote(event, noteId) {
+        event.stopPropagation()
+        setNotes(oldNotes => oldNotes.filter(note => note.id !== noteId))
     }
     
     function findCurrentNote() {
@@ -57,6 +70,7 @@ export default function App() {
                     currentNote={findCurrentNote()}
                     setCurrentNoteId={setCurrentNoteId}
                     newNote={createNewNote}
+                    deleteNote={deleteNote}
                 />
                 {
                     currentNoteId && 
